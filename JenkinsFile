@@ -22,8 +22,12 @@ pipeline {
 
     stage('Apply') {
       steps {
-        input message: 'Approve deployment?'
-        sh 'terraform apply tfplan'
+        withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_CREDENTIALS')]) {
+          withEnv(["GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CREDENTIALS"]) {
+            input message: 'Approve deployment?'
+            sh 'terraform apply tfplan'
+          }
+        }
       }
     }
   }
