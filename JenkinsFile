@@ -1,0 +1,34 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/jeremiahb97/terraform-project-code.git'
+      }
+    }
+
+    stage('Init') {
+      steps {
+        sh 'terraform init'
+      }
+    }
+
+    stage('Plan') {
+      steps {
+        sh 'terraform plan -out=tfplan'
+      }
+    }
+
+    stage('Apply') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_CREDENTIALS')]) {
+          withEnv(["GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CREDENTIALS"]) {
+            input message: 'Approve deployment?'
+            sh 'terraform apply tfplan'
+          }
+        }
+      }
+    }
+  }
+}
