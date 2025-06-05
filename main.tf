@@ -22,11 +22,12 @@ resource "google_storage_bucket" "example_bucket" {
   }
 }
 
-provider aliased {
+provider "google" {
+    alias = "gcp-instance"
     project = "alien-drake-271918"
     region = "us-central1"
+    zone = "us-central1-a"
 }
-
 resource "google_compute_instance" "example_instance" {
 
     name = "my-new-instance"
