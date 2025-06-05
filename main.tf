@@ -35,7 +35,7 @@ resource "google_compute_instance" "example_instance" {
     zone = "us-central1-a"
     boot_disk {
         initialize_params {
-            image = "projects/debian-cloud/global/images/family/debian-10"
+            image = "projects/ubuntu-os-cloud/global/images/ubuntu-1804-bionic-v20200317"
         }
     }
     network_interface {
