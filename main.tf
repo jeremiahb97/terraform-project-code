@@ -4,7 +4,7 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "example_bucket" {
-  name          = "mynewbucket9292"
+  name          = "mynewbucket9393"
   location      = "US"
   storage_class = "STANDARD"
 
