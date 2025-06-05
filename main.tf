@@ -22,7 +22,7 @@ resource "google_storage_bucket" "example_bucket" {
   }
 }
 
-provider "google" {
+provider aliased {
     project = "alien-drake-271918"
     region = "us-central1"
 }
