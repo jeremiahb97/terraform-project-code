@@ -40,7 +40,6 @@ resource "google_compute_instance" "example_instance" {
     network_interface {
         network = "default"
         access_config {
-            name = "External NAT"
             network_tier = "PREMIUM"
         }
     }
