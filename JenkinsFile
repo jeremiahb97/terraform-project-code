@@ -26,20 +26,14 @@ pipeline {
       }
     }
 
-stage('Apply') {
-  steps {
-    withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_CREDENTIALS')]) {
-      withEnv(["GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CREDENTIALS"]) {
-        sh '''
-          echo "🔐 Activating service account..."
-          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-          gcloud config set project your-project-id
-          gcloud auth list
-        '''
-        sh 'terraform apply -auto-approve'
+    stage('Apply') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_CREDENTIALS')]) {
+          withEnv(["GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_CREDENTIALS"]) {
+            sh 'terraform apply -auto-approve'
+          }
+        }
       }
     }
-  }
-}
   }
 }
