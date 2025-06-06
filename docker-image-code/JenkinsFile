@@ -1,0 +1,50 @@
+pipeline {
+  agent any
+
+  environment {
+    PROJECT_ID = 'alien-drake-271918'
+    REGION = 'us-central1'
+    IMAGE = 'my-repo/my-app'
+  }
+
+  stages {
+    stage('Clone') {
+      steps {
+        git 'https://github.com/jeremiahb97/docker-image-code.git'
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        script {
+          docker.build("us-central1-docker.pkg.dev/${PROJECT_ID}/${IMAGE}:latest")
+        }
+      }
+    }
+
+    stage('Push to Artifact Registry') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+          sh '''
+            gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+            gcloud config set project $PROJECT_ID
+            gcloud auth configure-docker us-central1-docker.pkg.dev
+            docker push us-central1-docker.pkg.dev/$PROJECT_ID/$IMAGE:latest
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to Cloud Run') {
+      steps {
+        sh '''
+          gcloud run deploy my-app \
+            --image=us-central1-docker.pkg.dev/$PROJECT_ID/$IMAGE:latest \
+            --platform=managed \
+            --region=$REGION \
+            --allow-unauthenticated
+        '''
+      }
+    }
+  }
+}
